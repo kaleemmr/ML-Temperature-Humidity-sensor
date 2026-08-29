@@ -29,16 +29,16 @@ while True: # creates the infinite loop
         time.sleep(5) # Wait 5 seconds between each read or sample.
         # This prevents sensor self-heating and keeps the log file size smaller so flash memory isnt overloaded.
         
-        sensor.measure()
-        temp = sensor.temperature()
-        hum = sensor.humidity()
+        sensor.measure() # triggers the physical DHT22 sensor to take a new reading
+        temp = sensor.temperature() # extracts the temeperature reading into the variable temp
+        hum = sensor.humidity() # extracts the relative humidity reading to the variable hum
         
-        # Append data row to the CSV file on Pico's memory
-        with open(FILENAME, "a") as f:
+        # Appends the data row to the CSV file on Pico's  flash memory using 'a' mode which is append and adding them into the csv file one after another
+        with open(FILENAME, "a") as f: 
             f.write(f"{temp:.1f},{hum:.1f}\n")
             
-        read_count += 1
-        print(f"[{read_count}] Saved -> Temp: {temp:.1f}°C | Hum: {hum:.1f}%")
+        read_count += 1 # increments the variable read_count by 1 for every reading 
+        print(f"[{read_count}] Saved -> Temp: {temp:.1f}°C | Hum: {hum:.1f}%") # prints the read count and the current temp and humidity
         
-    except OSError as e:
-        print("Sensor read error, retrying...", e)
+    except OSError as e: # i learned that DHT sensors can sometimes drop packets due to precise signal timing.
+        print("Sensor read error, retrying...", e) # so this catches the OSError and keeps the script from crashing when a read fails, so you dont randomly come back after a day with insufficient data.
