@@ -36,6 +36,8 @@ while True: # creates the infinite loop
         # Appends the data row to the CSV file on Pico's  flash memory using 'a' mode which is append and adding them into the csv file one after another
         with open(FILENAME, "a") as f: 
             f.write(f"{temp:.1f},{hum:.1f}\n")
+            f.flush() # makes sure the results are saved instantly to the file otherwise when transferring maybe to another device or charger to power the pico and sensor it wont add the data straight away which can cause some issues.
+            f.close()
             
         read_count += 1 # increments the variable read_count by 1 for every reading 
         print(f"[{read_count}] Saved -> Temp: {temp:.1f}°C | Hum: {hum:.1f}%") # prints the read count and the current temp and humidity
