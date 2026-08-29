@@ -30,7 +30,7 @@ Setup & Configuration:
 Upload the data-logging script to the Pico filesystem and save it as `main.py`. 
 
 * Autonomous Boot: Saving the script as `main.py` allows the Pico to automatically execute code upon receiving USB power without needing Thonny connected. (you can use a phone charger or anything you can plug a USB into that has a battery to power this and its very efficient.
-* Sampling Rate: 5-second intervals per sample (prevents sensor self-heating and conserves storage over 2 days, 480KB should be used from the 2MB of flash memory in the pico).
+* Sampling Rate: 5-second intervals per sample (prevents sensor self-heating and conserves storage over 2 days, 192KB should be used from the 2MB of flash memory in the pico).
 * Storage Format: Appends raw values to `dht22_data.csv` on internal flash memory.
 
 
