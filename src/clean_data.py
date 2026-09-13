@@ -1,14 +1,14 @@
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # imports libraries, and python operating system.
 
-# 1. Define File Paths
-RAW_DATA_PATH = os.path.join("data", "dht22_data.csv")
-CLEAN_DATA_PATH = os.path.join("data", "dht22_data_clean.csv")
+# 1. Define file paths
+RAW_DATA_PATH = os.path.join("data", "dht22_data.csv")  
+CLEAN_DATA_PATH = os.path.join("data", "dht22_data_clean.csv") # i had these files and data paths within vs code and these are defined using concatenation.
 
-print("=== Phase 2: Data Cleaning & Inspection ===")
+print("Data Cleaning.")
 
-# 2. Load Raw CSV Data
+# 2. Load raw CSV Data
 if not os.path.exists(RAW_DATA_PATH):
     raise FileNotFoundError(f"Could not find {RAW_DATA_PATH}. Make sure the file is saved in the data/ directory.")
 
