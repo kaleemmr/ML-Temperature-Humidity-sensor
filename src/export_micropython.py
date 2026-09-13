@@ -1,32 +1,30 @@
 import os
-import joblib
-import numpy as np
+import joblib 
+import numpy as np # imports all libraries needed, numpy is here to solve all the complex maths.
 
-MODEL_PATH = os.path.join("models", "isolation_forest.joblib")
-OUTPUT_PATH = os.path.join("models", "pico_model.py")
+MODEL_PATH = os.path.join("models", "isolation_forest.joblib") 
+OUTPUT_PATH = os.path.join("models", "pico_model.py") # sets all the maths needed, and makes the new path for the new model to be fully produced and ready for the pico.
 
-model = joblib.load(MODEL_PATH)
+model = joblib.load(MODEL_PATH) # loads the isolation forest model into the variable model.
 
-print("=== Converting Isolation Forest for MicroPython ===")
+print("converting")
 
-# Extract feature medians/bounds directly from estimators for embedded execution
 temps = []
-hums = []
+hums = [] # empty arrays
 
 # Sample space limits learned by trees
-for estimator in model.estimators_:
-    tree = estimator.tree_
-    for feature, threshold in zip(tree.feature, tree.threshold):
+for estimator in model.estimators_: # iterates through each decision tree in the model
+    tree = estimator.tree_ # gets access to that specific tree and stores it in the variable tree.
+    for feature, threshold in zip(tree.feature, tree.threshold): # features gets the index for each split or leaf node. threshold gets the values. 0 = temp , 1 = humifity, -2 = lead node which is basically nothing        
         if feature == 0:  # temperature_c
             temps.append(threshold)
         elif feature == 1:  # humidity_percent
             hums.append(threshold)
 
-t_min, t_max = np.percentile(temps, [5, 95])
+t_min, t_max = np.percentile(temps, [5, 95]) # gets the 5th and 95th percentiles of the split thresholds and these will be dense and full of more normal variance then from 0 and 100% which are really extreme choices.
 h_min, h_max = np.percentile(hums, [5, 95])
 
-micropython_code = f"""# Auto-generated Micro-ML Decision Rules for MicroPython
-# Derived from Scikit-Learn IsolationForest Model Binary
+micropython_code = f"""# 
 
 TEMP_MIN = {t_min:.2f}
 TEMP_MAX = {t_max:.2f}
