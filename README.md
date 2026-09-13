@@ -60,19 +60,6 @@ Upload the data-logging script to the Pico filesystem and save it as `main.py`.
 * Dataset Collection: Logged baseline ambient room conditions over a extended period to capture day/night environmental shifts. (1-3 days)
 * Now leave the Pico logging data to collect a solid baseline! 
 * Save src/pico_logger.py onto the Raspberry Pi Pico root directory as main.py so MicroPython auto-executes it on boot."
-
-
-delete after done..
-Project Structure
-
-```text
-├── data/
-│   ├── dht22_raw_data.csv         # Raw logs extracted from Pico flash storage
-│   └── dht22_cleaned_data.csv     # Preprocessed data (pandas)
-├── models/
-│   └── anomaly_model.joblib       # Trained Isolation Forest model binary
-├── src/
-│   ├── pico_logger.py             # Autonomous data logger (renamed to main.py on Pico)
 │   ├── clean_data.py              # Script 2: Data cleaning & dropped packet removal
 │   └── train_model.py             # Script 3: Unsupervised ML model training
 └── README.md
