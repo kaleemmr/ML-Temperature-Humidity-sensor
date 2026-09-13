@@ -26,24 +26,23 @@ h_min, h_max = np.percentile(hums, [5, 95])
 
 micropython_code = f"""# 
 
+
 TEMP_MIN = {t_min:.2f}
 TEMP_MAX = {t_max:.2f}
 HUM_MIN = {h_min:.2f}
 HUM_MAX = {h_max:.2f}
 
 def predict(temp, hum):
-    \"\"\"
-    Returns 1 for NORMAL, -1 for ANOMALY based on trained tree thresholds.
-    \"\"\"
+    
     if (TEMP_MIN <= temp <= TEMP_MAX) and (HUM_MIN <= hum <= HUM_MAX):
-        return 1  # Normal
+        return 1  
     else:
-        return -1 # Anomaly
+        return -1 
 """
 
-with open(OUTPUT_PATH, "w") as f:
-    f.write(micropython_code)
+with open(OUTPUT_PATH, "w") as f: # sets writing the new model file ready for pico.
+    f.write(micropython_code) # writes the new model file.
 
-print(f"[+] Micro-ML module exported successfully: {OUTPUT_PATH}")
-print(f"    - Temperature Bounds: {t_min:.1f}°C to {t_max:.1f}°C")
-print(f"    - Humidity Bounds: {h_min:.1f}% to {h_max:.1f}%")
+print(f" module exported successfully: {OUTPUT_PATH}")
+print(f"Temperature Bounds: {t_min:.1f}°C to {t_max:.1f}°C")
+print(f"Humidity Bounds: {h_min:.1f}% to {h_max:.1f}%")
