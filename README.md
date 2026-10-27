@@ -19,6 +19,9 @@ Wiring Pinout:
 
 Note: A 4.7kΩ resistor is wired between the DHT22 Data pin and DHT22 VCC (3.3V) to ensure stable signal readings.
 
+Problem:
+I noticed in my home i didnt have a temperature or humidity sensor, and even if i got a device to do so, most will just display the temperature, some more clearer then others. Most don't have the intelligence to tell you if its too cold or too warm, nevermind adapt to different rooms and homes, and then have the hardware to clearly make clear to the user and other people if the temperature or humidity isn't normal. My little brother is very sensitive to environment changes, and it can cause him to fall ill. So i decided to build one myself using my current knowledge.
+
 Setup & Configuration:
 1. Thonny IDE Environment
 
@@ -64,5 +67,35 @@ Upload the data-logging script to the Pico filesystem and save it as `main.py`.
 │   └── train_model.py             # Script 3: Unsupervised ML model training
 └── README.md
 
+4. Cleaning Up the Raw Data...
+When you leave a sensor running for over a day, you're bound to pick up some junk data—dropped packets, missing values, or weird electrical spikes where the DHT22 glitches out. The cleaning script handles this by:
+- Dropping any blank or broken rows.
+- Forcing everything into proper numeric types (and turning text errors into NaN(Not a Number) so they can be thrown away as they get found).
+- Running a sanity check to delete physically impossible readings (like a temperature of -999°C or 200% humidity which could happen due to weird electrical faults and more).
+- Plotting the cleaned data into a dual-panel graph (baseline_plot.png) so you can visually verify the room's temperature and humidity trends before sending it to the model to use.
+  
+5. Training the Isolation Forest...
 
+- Instead of manually guessing what counts as "too hot" or "too humid", I used an unsupervised machine learning model to learn the normal baseline.
+- The Algorithm: An Isolation Forest from Scikit-Learn. It's great for this because it works by randomly slicing data to see how easily points can be isolated (outliers get isolated fast; normal points take a lot of cuts).
+- Settings: Set n_estimators=100 so it builds 100 independent trees to cancel out noise, and contamination=0.01 to assume roughly 1% of the baseline data might have minor anomalies.
+- Reproducibility: Used random_state=42 so the random tree generation is completely deterministic—anyone cloning the repo will get the exact same model.
+- Export: Saves the trained model as models/isolation_forest.joblib
+
+
+6. Shrinking the Model for the Pico...
+
+You obviously can't install Scikit-Learn, Pandas, or NumPy on a Raspberry Pi Pico because it only has 264 KB of RAM and 2 MB of flash memory.To bridge that gap, I wrote an export script that extracts the model's core logic without needing the heavy libraries that would nott be able to run in the pico:
+- It loads up the trained .joblib model.
+- It looks inside all 100 decision trees and pulls out every threshold split used for temperature and humidity.
+- it runs a statistical check (5th and 95th percentiles) to find the core variance envelope—the actual width of normal fluctuation, Temperature and Humidity overr time.
+- It writes those numbers directly into a tiny, standalone MicroPython file (models/pico_model.py) that the Pico can run instantly with zero dependencies.
+
+
+7. Making It Adapt to New Environments...
+
+If you hardcode static temperature limits based on the room you trained it in (e.g., 21°C), the moment you take the Pico to a warmer room (like 26°C), it'll immediately trigger a false alarm and flash red forever. To fix this, I added an on-boot calibration routine:When the Pico powers up, it takes 5 quick sensor readings over 3 seconds.It calculates the average baseline of whatever room it's currently sitting in. It takes the pre-trained ML variance envelope, so in my case +- 0.58C and +- 4.23% Humidity and shifts that box right over the new room's center point. 
+- Safety Rails: If the room is freezing (<15°C) or scorching (>32°C), it refuses to calibrate to a bad reading and safely falls back to default limits.
+
+And thats it, thats how i made a temperature and humidity sensor from scratch, which helps me keep an eye on the temperature and humidity in my home as my brother gets ill quite easily. 
 
