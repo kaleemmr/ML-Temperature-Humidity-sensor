@@ -94,7 +94,10 @@ You obviously can't install Scikit-Learn, Pandas, or NumPy on a Raspberry Pi Pic
 
 7. Making It Adapt to New Environments...
 
-If you hardcode static temperature limits based on the room you trained it in (e.g., 21°C), the moment you take the Pico to a warmer room (like 26°C), it'll immediately trigger a false alarm and flash red forever. To fix this, I added an on-boot calibration routine:When the Pico powers up, it takes 5 quick sensor readings over 3 seconds.It calculates the average baseline of whatever room it's currently sitting in. It takes the pre-trained ML variance envelope, so in my case +- 0.58C and +- 4.23% Humidity and shifts that box right over the new room's center point. 
+If you hardcode static temperature limits based on the room you trained it in (e.g., 21°C), the moment you take the Pico to a warmer room (like 26°C), it'll immediately trigger a false alarm and flash red forever. To fix this, I added an on-boot calibration routine, so when the Pico powers up:
+- it takes 5 quick sensor readings over 3 seconds.
+- It calculates the average baseline of whatever room it's currently sitting in.
+- It takes the pre-trained ML variance envelope, so in my case +- 0.58C and +- 4.23% Humidity and shifts that box right over the new room's center point. 
 - Safety Rails: If the room is freezing (<15°C) or scorching (>32°C), it refuses to calibrate to a bad reading and safely falls back to default limits.
 
 And thats it, thats how i made a temperature and humidity sensor from scratch, which helps me keep an eye on the temperature and humidity in my home as my brother gets ill quite easily and now it helps a lot!
